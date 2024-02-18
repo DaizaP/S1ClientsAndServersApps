@@ -44,6 +44,11 @@ namespace S1ClientsAndServersApps.Client
                 {
                     try
                     {
+                        if (!client.Connected)
+                        {
+                            Console.WriteLine("Нет соединения с сервером");
+                            break;
+                        }
                         string? message = Console.ReadLine();
                         if (message == "Exit")
                         {
