@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
 
 namespace S1ClientsAndServersApps.Client
 {
@@ -50,6 +45,13 @@ namespace S1ClientsAndServersApps.Client
                     try
                     {
                         string? message = Console.ReadLine();
+                        if (message == "Exit")
+                        {
+                            Console.WriteLine("Вы вышли из чата");
+                            await writer.WriteLineAsync(message);
+                            await writer.FlushAsync();
+                            break;
+                        }
                         await writer.WriteLineAsync(message);
                         await writer.FlushAsync();
                     }
@@ -80,6 +82,12 @@ namespace S1ClientsAndServersApps.Client
                         if (message.Contains(Code.succesCode))
                         {
                             Console.WriteLine(" | OK");
+                            continue;
+                        }
+                        if (message.Contains(Code.shutdownServerCode))
+                        {
+                            Console.WriteLine(" | Сервер был выключен");
+                            break;
                         }
                         else
                         {

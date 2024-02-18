@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S1ClientsAndServersApps.Server
 {
@@ -72,6 +67,8 @@ namespace S1ClientsAndServersApps.Server
         {
             foreach (var client in clients)
             {
+                client.Writer.WriteLineAsync($"{DateTime.Now}. Code:{Code.shutdownServerCode} Server shutdown"); //передача данных
+                client.Writer.FlushAsync();
                 client.Close(); //отключение клиента
             }
             tcpListener.Stop(); //остановка сервера

@@ -1,5 +1,4 @@
 ﻿using System.Net.Sockets;
-using static S1ClientsAndServersApps.Server.ServerProgram;
 
 namespace S1ClientsAndServersApps.Server
 {
@@ -50,9 +49,13 @@ namespace S1ClientsAndServersApps.Server
                         }
                         message = $"{userName}: {message}";
                         Console.WriteLine(message);
+                        if(message == $"{userName}: Exit")
+                        {
+                            throw new Exception("User exit");
+                        }
                         await server.BroadcastMessageAsync(message, Id);
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         isClosed = true;
                         message = $"{userName} покинул чат";

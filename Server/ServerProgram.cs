@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
-
+﻿
 namespace S1ClientsAndServersApps.Server
 {
     internal class ServerProgram
@@ -8,7 +6,14 @@ namespace S1ClientsAndServersApps.Server
         static async Task Main(string[] args)
         {
             ChatServer server = new ChatServer();
-            await server.ListenAsync();
+            server.ListenAsync();
+            Console.WriteLine("Q — Выключение сервера");
+            string message = Console.ReadLine();
+            if (message == "Q" || message == "q" || message == "Й" || message == "й") 
+            {
+                server.Disconnect();
+            }
+
         }
     }
 }
