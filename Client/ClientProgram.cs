@@ -9,9 +9,9 @@ namespace S1ClientsAndServersApps.Client
 {
     internal class ClientProgram
     {
-        static async Task Maiin(string[] args)
-        {
-            ClassClient.Run();
-        }
+        //static async Task Main(string[] args)
+        //{
+        //    ClassClient.Run();
+        //}
     }
 }
