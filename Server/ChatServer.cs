@@ -9,9 +9,7 @@ namespace S1ClientsAndServersApps.Server
         List<ClientObject> clients = new List<ClientObject>(); // все подключения
         protected internal void RemoveConnection(string id)
         {
-            // получаем по id закрытое подключение
             ClientObject? client = clients.FirstOrDefault(c => c.Id == id);
-            // и удаляем его из списка подключений
             if (client != null) clients.Remove(client);
             client?.Close();
         }
@@ -29,7 +27,7 @@ namespace S1ClientsAndServersApps.Server
 
                     ClientObject clientObject = new Server.ClientObject(tcpClient, this);
                     clients.Add(clientObject);
-                    Task.Run(clientObject.ProcessAsync);
+                    Task.Run(clientObject.ProcessAsync); // добавляем фоновый поток
                 }
             }
             catch (Exception ex)
@@ -47,7 +45,7 @@ namespace S1ClientsAndServersApps.Server
         {
             foreach (var client in clients)
             {
-                if (client.Id != id) // если id клиента не равно id отправителя
+                if (client.Id != id) 
                 {
                     await client.Writer.WriteLineAsync(message); //передача данных
                     await client.Writer.FlushAsync();

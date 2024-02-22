@@ -6,13 +6,21 @@ namespace S1ClientsAndServersApps.Server
         static async Task Main(string[] args)
         {
             ChatServer server = new ChatServer();
-            server.ListenAsync();
-            Console.WriteLine("Q — Выключение сервера");
-            string message = Console.ReadLine();
-            if (message == "Q" || message == "q" || message == "Й" || message == "й") 
+            Thread t = new Thread(() =>
             {
-                server.Disconnect();
-            }
+                Console.WriteLine("Q — Выключение сервера");
+                while (true)
+                {
+                    string message = Console.ReadLine();
+                    if (message == "Q" || message == "q" || message == "Й" || message == "й")
+                    {
+                        server.Disconnect();
+                        break;
+                    }
+                }
+            });
+            t.Start();
+            server.ListenAsync();
 
         }
     }

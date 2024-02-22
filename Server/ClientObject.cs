@@ -32,9 +32,7 @@ namespace S1ClientsAndServersApps.Server
                 string? userName = await Reader.ReadLineAsync();
                 string? message = $"{userName} вошел в чат";
                 // посылаем сообщение о входе в чат всем подключенным пользователям
-                await server.BroadcastMessageAsync(message, Id);
-
-                Console.WriteLine(message);
+                server.BroadcastMessageAsync(message, Id);
                 // в бесконечном цикле получаем сообщения от клиента
                 while (true)
                 {
@@ -48,19 +46,18 @@ namespace S1ClientsAndServersApps.Server
                             continue;
                         }
                         message = $"{userName}: {message}";
-                        Console.WriteLine(message);
                         if(message == $"{userName}: Exit")
                         {
                             throw new Exception("User exit");
                         }
-                        await server.BroadcastMessageAsync(message, Id);
+                        server.BroadcastMessageAsync(message, Id);
                     }
                     catch (Exception ex)
                     {
                         isClosed = true;
                         message = $"{userName} покинул чат";
                         Console.WriteLine(message);
-                        await server.BroadcastMessageAsync(message, Id);
+                        server.BroadcastMessageAsync(message, Id);
                         break;
                     }
                 }
