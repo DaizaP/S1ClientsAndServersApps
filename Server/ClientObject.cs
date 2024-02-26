@@ -28,6 +28,7 @@ namespace S1ClientsAndServersApps.Server
         {
             try
             {
+                
                 // получаем имя пользователя
                 string? userName = await Reader.ReadLineAsync();
                 string? message = $"{userName} вошел в чат";
@@ -58,6 +59,7 @@ namespace S1ClientsAndServersApps.Server
                         message = $"{userName} покинул чат";
                         Console.WriteLine(message);
                         server.BroadcastMessageAsync(message, Id);
+                        Close();
                         break;
                     }
                 }
@@ -79,5 +81,6 @@ namespace S1ClientsAndServersApps.Server
             Reader.Close();
             client.Close();
         }
+
     }
 }

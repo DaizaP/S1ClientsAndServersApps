@@ -1,5 +1,5 @@
-﻿using System.Net.Sockets;
-using System.Net;
+﻿using System.Net;
+using System.Net.Sockets;
 
 namespace S1ClientsAndServersApps.Server
 {
@@ -14,20 +14,22 @@ namespace S1ClientsAndServersApps.Server
             client?.Close();
         }
         // прослушивание входящих подключений
-        protected internal async Task ListenAsync()
+        protected internal async Task ListenAsync(CancellationToken token)
         {
+            Task disconnectTask = new Task(() => Disconnect(token));
+            disconnectTask.Start();
             try
             {
                 tcpListener.Start();
                 Console.WriteLine("Сервер запущен. Ожидание подключений...");
-
                 while (true)
                 {
                     TcpClient tcpClient = await tcpListener.AcceptTcpClientAsync();
 
                     ClientObject clientObject = new Server.ClientObject(tcpClient, this);
                     clients.Add(clientObject);
-                    Task.Run(clientObject.ProcessAsync); // добавляем фоновый поток
+                    Task t = new Task(() => clientObject.ProcessAsync()); // добавляем фоновый поток
+                    t.Start();
                 }
             }
             catch (Exception ex)
@@ -36,7 +38,7 @@ namespace S1ClientsAndServersApps.Server
             }
             finally
             {
-                Disconnect();
+                Disconnect(token);
             }
         }
 
@@ -45,7 +47,7 @@ namespace S1ClientsAndServersApps.Server
         {
             foreach (var client in clients)
             {
-                if (client.Id != id) 
+                if (client.Id != id)
                 {
                     await client.Writer.WriteLineAsync(message); //передача данных
                     await client.Writer.FlushAsync();
@@ -61,15 +63,23 @@ namespace S1ClientsAndServersApps.Server
             }
         }
         // отключение всех клиентов
-        protected internal void Disconnect()
+        protected internal async Task Disconnect(CancellationToken token)
         {
-            foreach (var client in clients)
+            while (true)
             {
-                client.Writer.WriteLineAsync($"{DateTime.Now}. Code:{Code.shutdownServerCode} Server shutdown"); //передача данных
-                client.Writer.FlushAsync();
-                client.Close(); //отключение клиента
+                if (token.IsCancellationRequested)
+                {
+                    foreach (var client in clients)
+                    {
+                        await client.Writer.WriteLineAsync($"{DateTime.Now}. Code:{Code.shutdownServerCode} Server shutdown"); //передача данных
+                        await client.Writer.FlushAsync();
+                        client.Close(); //отключение клиента
+                    }
+                    tcpListener.Stop(); //остановка сервера
+                    Console.WriteLine("Работа сервера остановлена");
+                    break;
+                }
             }
-            tcpListener.Stop(); //остановка сервера
         }
     }
 }

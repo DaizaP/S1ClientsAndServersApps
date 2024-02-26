@@ -24,7 +24,8 @@ namespace S1ClientsAndServersApps.Client
                 // запускаем новый поток для получения данных
                 Task.Run(() => ReceiveMessageAsync(Reader, Writer));
                 // запускаем ввод сообщений
-                await SendMessageAsync(Writer);
+                Task sm = new Task(() => SendMessageAsync(Writer));
+                sm.Start();
             }
             catch (Exception ex)
             {
@@ -32,6 +33,7 @@ namespace S1ClientsAndServersApps.Client
             }
             Writer?.Close();
             Reader?.Close();
+            Console.WriteLine("Работа завершена");
 
             // отправка сообщений
             async Task SendMessageAsync(StreamWriter writer)
